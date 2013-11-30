@@ -1,31 +1,32 @@
-/**
- * Sets up the version 1 api test
- */
 var assert = require('assert');
 var config = require('../Config/config');
-var request = require('request');
 var mongoose = require('mongoose');
-var server = require('../server');
 var Delay = require('../Model/V1Models').Delay;
 var Picture = require('../Model/V1Models').Picture;
-var url = "";
-var db = "";
-var ct = "application/v1+json";
+var DelayHandler = require('../handler/DelayHandler');
+var PictureHandler = require('../handler/PictureHandler');
+var Request = require('./mock').Request;
+var Response = require('./mock').Response;
+var utils = require('../handler/utils');
+
 
 describe ('Test', function(){
 
-	before(function(done){
-		url = "http://localhost:" + config.dev.test.port;
+	it('util test', function(done){
+		var req = new Request();
+		req.set('Content-Type', 'application/v1+json');
+		assert.equal('v1', utils.getVersion(req));
+		done()
+	})// end util test
 
-		console.log("logger started. Connection to mongoDB..");
+	before(function(done){
+
+		console.log("Connection to mongoDB..");
 		mongoose.connect(config.dev.test.mongodb);
 		db = mongoose.connection;
 		db.on('error', console.error.bind(console, 'connection error:'));
 		db.once('open', function(){
-			console.log("Successfully connected to mongoDB. Starting web server...");
-			server.app.set('port', config.dev.test.port);
-			server.start();
-			console.log("Successfully started web server. Waiting for incoming connections...");
+			console.log("Successfully connected to mongoDB. ");
 			done();
 		})				
 	})//end before
@@ -34,95 +35,95 @@ describe ('Test', function(){
 		Delay.remove({version: "v1", time: 4}, function(err){});
 		Picture.remove({url: {$ne: null}}, function(err){});
 		db.close();
-		server.stop();
+		console.log("db closed.");
 		done();
 	})//end after
 	
 	describe ('Delay Test', function(){
 		it('should insert delay of 4', function(done){
-			request({				
-				uri: url + '/api/delay/4',
-				method: 'PUT',
-				headers: {'Content-Type': ct}
-									
-				}, function(err, res, body){
+			var req = new Request(4);
+			req.set('Content-Type', 'application/v1+json');
+			var res = new Response(finish);
+			DelayHandler.setDelay(req, res);
+
+			function finish(){
 				assert.equal(200, res.statusCode);
-				assert.equal(4, JSON.parse(body).time);
-				done()
-			})
+				assert.equal(4, res.body.time);
+				done();
+			}
 		})//end insert delay 4
 
 		it('should return delay 4', function(done){
-			request({				
-				uri: url + '/api/delay',
-				method: 'GET',
-				headers: {'Content-Type': ct}
-									
-				}, function(err, res, body){
-					assert.equal(200, res.statusCode, body);
-					assert.equal(4, JSON.parse(body).time, body);
-					done();
-				})
+			var req = new Request();
+			req.set('Content-Type', 'application/v1+json');
+			var res = new Response(finish);
+			DelayHandler.getDelay(req, res);
+			function finish(){
+				assert.equal(200, res.statusCode, res.body);
+				assert.equal(4, res.body.time, res.body);
+				done();
+			}	
 		})// end get delay
 	})//end delay describe
-	
+
 	describe ('Pictures Test', function(){
+		var req = new Request();
+		req.set('Content-Type', 'application/v1+json');
+
 		var pictures = [];
 		pictures.push({thumburl: "aaa", url: "fff"});
 		pictures.push({thumburl: "bbb", url: "zzz"});
-		it('should insert pictures', function(done){
-			request({
-				uri: url+ '/api/picture/addPictures',
-				method: 'POST',
-				headers: {'Content-Type': ct},
-				body: JSON.stringify(pictures)
-				}, function(err, res, body){
-					assert.equal(200, res.statusCode, body);
-					assert.equal(2, JSON.parse(body).successcount, body);
-					done();
-				})
+		it('should insert pictures', function(done){	
+			req.body = pictures;
+			var res = new Response(finish);
+			PictureHandler.insertPictures(req, res);
+
+			function finish(){
+				assert.equal(200, res.statusCode, res.body);
+				assert.equal(2, res.body.successcount, res.body);
+				done();
+			}	
 		})// end insert pictures
 
 		it('should return pictures', function(done){
-			request({
-				uri: url+ '/api/picture/getpictures',
-				method: 'GET',
-				headers: {'Content-Type': ct}
-				}, function(err, res, body){
-					assert.equal(200, res.statusCode, body);
-					assert.equal(2, JSON.parse(body).length, body);
-					assert.equal("bbb", JSON.parse(body)[0].thumburl, body);
-					done();
-				})
+			var req = new Request();
+			req.set('Content-Type', 'application/v1+json');
+			var res = new Response(finish);
+			PictureHandler.getPictures(req, res);
+
+			function finish(){
+				assert.equal(200, res.statusCode, res.body);
+				assert.notEqual(0, res.body.length, res.body);
+				assert.equal("bbb", res.body[0].thumburl, res.body);
+				done();
+			}
 		})// end return pictures
 
 		it('should delete one picture', function(done){
 			var urls = [];
 			urls.push({url: "zzz"});
-			request({
-				uri: url+ '/api/picture/delete',
-				method: 'POST',
-				headers: {'Content-Type': ct},
-				body: JSON.stringify(urls)
-				}, function(err, res, body){
-					assert.equal(200, res.statusCode, body);
-					assert.equal(1, JSON.parse(body).deletecount, body);
-					done();
-				})
-		})// end delete pictures
+				
+			req.body = urls;
+			var res = new Response(finish);
+			PictureHandler.deletePictures(req, res);
+
+			function finish(){
+				assert.equal(200, res.statusCode, res.body);
+				assert.equal(1, res.body.deletecount, res.body);
+				done();
+			}
+		})// end delete one picture
 
 		it('should return one picture', function(done){
-			request({
-				uri: url+ '/api/picture/getpictures',
-				method: 'GET',
-				headers: {'Content-Type': ct}
-				}, function(err, res, body){
-					assert.equal(200, res.statusCode, body);
-					assert.equal(1, JSON.parse(body).length, body);
-					assert.equal("aaa", JSON.parse(body)[0].thumburl, body);
-					done();
-				})
-		})// end return pictures
-	})// end pictures describe 
-	
-})//end describe
+			var res = new Response(finish);
+			PictureHandler.getPictures(req, res);
+
+			function finish(){
+				assert.equal(200, res.statusCode, res.body);
+				assert.equal(1, res.body.length, res.body);
+				assert.equal("aaa", res.body[0].thumburl, res.body);
+				done();
+			}
+		})// end return pictures*/
+	})// end pictures describe
+})// end Test
