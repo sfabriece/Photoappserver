@@ -58,12 +58,10 @@ exports.insertPictures = function(res, version, body, next){
 		case "v1":
 
 			for (var i = body.length - 1; i >= 0; i--) {
-				if (i == 0) {
-					insert(body[i], true);
-				}else{
-					insert(body[i]);
-				}
+				Picture.update({url: body[i].url, version: version}, body[i], {upsert: true}, function(err){
+				});
 			}
+			res.send(200, {successcount: body.length});
 			break;
 		default:
 			return next(new VersionException("you must supply a Content-Type as shown in the documentation."));

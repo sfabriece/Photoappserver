@@ -79,6 +79,7 @@ describe ('Test', function(){
 			PictureHandler.insertPictures(req, res);
 
 			function finish(){
+				console.log(res);
 				assert.equal(200, res.statusCode, res.body);
 				assert.equal(2, res.body.successcount, res.body);
 				done();
