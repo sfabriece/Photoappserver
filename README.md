@@ -1,4 +1,0 @@
-Photoappserver
-==============
-
-Server for Photoapp
