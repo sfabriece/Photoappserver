@@ -6,7 +6,7 @@ var pictureSchema = new Schema({
 	thumburl: String,
 	url: String,
 	tag: [String],
-	date: Date 
+	identification: Number
 });
 
 var tagSchema = new Schema({

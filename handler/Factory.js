@@ -83,7 +83,7 @@ exports.insertPictures = function(res, version, body, next){
 			break;
 		case "v2":
 			for (var i = body.length - 1; i >= 0; i--) {
-				Picture2.update({url: body[i].url, version: version, date: new Date(body[i].date)}, body[i], {upsert: true}).exec();
+				Picture2.update({url: body[i].url, version: version}, body[i], {upsert: true}).exec();
 			}
 			res.send(200, {successcount: body.length});
 			setTimeout(DBUtils.truncate, 10000);
@@ -105,7 +105,7 @@ exports.getPictures = function (res, version, next){
 				});
 			break;
 		case "v2":
-				Picture2.aggregate({$sort : { date: -1}}, {$limit : 100}).exec(function(err, pictures){
+				Picture2.aggregate({$sort : { identification: -1}}, {$limit : 100}).exec(function(err, pictures){
 					res.send(200, pictures);
 					return;
 				});
