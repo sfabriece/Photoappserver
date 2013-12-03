@@ -5,6 +5,7 @@ var Delay = require('../Model/V1Models').Delay;
 var Picture = require('../Model/V1Models').Picture;
 var DelayHandler = require('../handler/DelayHandler');
 var PictureHandler = require('../handler/PictureHandler');
+var TagHandler = require('../handler/TagHandler');
 var Request = require('./mock').Request;
 var Response = require('./mock').Response;
 var utils = require('../handler/utils');
@@ -79,7 +80,6 @@ describe ('Test', function(){
 			PictureHandler.insertPictures(req, res);
 
 			function finish(){
-				console.log(res);
 				assert.equal(200, res.statusCode, res.body);
 				assert.equal(2, res.body.successcount, res.body);
 				done();
@@ -127,4 +127,20 @@ describe ('Test', function(){
 			}
 		})// end return pictures*/
 	})// end pictures describe
+
+	describe('Tag tests', function(){
+		var req = new Request();
+		req.set('Content-Type', 'application/v2+json');
+		it('should insert a tag', function(done){
+			req.body = {name:"uis"};
+			var res = new Response(finish);
+			TagHandler.insertTag(req, res);
+
+			function finish(){
+				assert.equal(200, res.statusCode, res.body);
+				assert.equal("uis", res.body.name, res.body);
+				done();
+			}
+		})// end insert tag
+	})// end tag describe
 })// end Test

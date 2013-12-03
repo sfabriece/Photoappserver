@@ -1,5 +1,6 @@
 var Delay = require('../Model/V1Models').Delay;
 var Picture = require('../Model/V1Models').Picture;
+var Tag = require('../Model/V2Models').Tag;
 
 function VersionException(message){
 	this.message = message;
@@ -101,6 +102,23 @@ exports.deletePictures = function (res, version, body, next){
 					remove(body[i]);
 			}
 			res.send(200, {deletecount: body.length})
+			break;
+		default:
+			return next(new VersionException("you must supply a Content-Type as shown in the documentation."));
+	}
+}
+
+exports.insertTag = function(res, version, body, next){
+	if (!body.name) {return next(new DBException("no tag supplied!"))};
+	switch(version){
+		case "v2":
+			Tag.update({version: version}, {name: body.name}, {upsert: true}, function(err){
+				if(err) 
+					return next(new DBException(err));
+				else{
+					res.send(200, {name: body.name});
+				}
+			});
 			break;
 		default:
 			return next(new VersionException("you must supply a Content-Type as shown in the documentation."));
