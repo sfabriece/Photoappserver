@@ -86,7 +86,7 @@ exports.insertPictures = function(res, version, body, next){
 				Picture2.update({url: body[i].url, version: version, date: new Date(body[i].date)}, body[i], {upsert: true}).exec();
 			}
 			res.send(200, {successcount: body.length});
-			setTimeout(DBUtils.truncate, 10000, function());
+			setTimeout(DBUtils.truncate, 10000);
 			break;
 		default:
 			return next(new VersionException("you must supply a Content-Type as shown in the documentation."));
