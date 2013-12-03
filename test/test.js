@@ -8,7 +8,7 @@ var PictureHandler = require('../handler/PictureHandler');
 var TagHandler = require('../handler/TagHandler');
 var Request = require('./mock').Request;
 var Response = require('./mock').Response;
-var utils = require('../handler/utils');
+var utils = require('../Util/utils');
 
 
 describe ('Test', function(){

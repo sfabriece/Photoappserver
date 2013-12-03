@@ -1,5 +1,4 @@
 
-
 function ParseException(message){
 	this.message = message;
 	this.name = "ParseException";

@@ -40,7 +40,7 @@ exports.setDelay = function(res, version, value, next){
 			});
 			break;
 		default:
-			return next(new DBException("an undefined error occured! " + version));
+			return next(new VersionException("you must supply a Content-Type as shown in the documentation."));
 	}
 }
 
