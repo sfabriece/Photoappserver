@@ -13,6 +13,7 @@ function setup(app){
 	app.post('/api/tag/addtag', TagHandler.insertTag);
 	app.get('/api/picture/getpictures', PictureHandler.getPictures);
 	app.post('/api/picture/delete', PictureHandler.deletePictures);
+	app.post('/api/tag/delete', TagHandler.removeTag);
 }
 
 exports.setup = setup;
