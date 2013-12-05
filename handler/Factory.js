@@ -82,8 +82,9 @@ exports.insertPictures = function(res, version, body, next){
 			res.send(200, {successcount: body.length});
 			break;
 		case "v2":
+			//console.log(body);
 			for (var i = body.length - 1; i >= 0; i--) {
-				Picture2.update({url: body[i].url, version: version, date: body[i].date}, body[i], {upsert: true}).exec();
+				Picture2.update({url: body[i].url, version: version, tag: body[i].tag}, body[i], {upsert: true}).exec();
 			}
 			res.send(200, {successcount: body.length});
 			setTimeout(DBUtils.truncate, 10000);
@@ -117,21 +118,48 @@ exports.getPictures = function (res, version, next){
 
 exports.deletePictures = function (res, version, body, next){
 	var deleted = 0;
-	var remove = function(pic, last){
-		Picture.findOneAndRemove({url: pic.url, version: version}).exec();
+	var last = false;
+	var callback = function(err, picture){
+		if(last){
+			if(!err){
+				deleted ++;
+			}
+			res.send(200, {deletecount: deleted});
+		}else{
+			if(!err){
+				deleted ++;
+			}
+		}
 	};
+
+	var remove = function(pic){
+		if(version === "v1"){
+			Picture.remove({url: pic.url, version: version}, callback);
+		}else{
+			Picture2.remove({url: pic.url, version: version}, callback);
+		}
+	};
+
 	switch(version){
 		case "v1":
-			for (var i in body) {
+			for (var i = 0; i < body.length; i++) {
+				if(i == (body.length - 1)){
+					last = true;
+					remove(body[i])
+				}else{
 					remove(body[i]);
+				}
 			}
-			res.send(200, {deletecount: body.length});
 			break;
 		case "v2":
-			for (var i in body) {
+			for (var i = 0; i < body.length; i++) {
+				if(i == (body.length - 1)){
+					last = true;
+					remove(body[i])
+				}else{
 					remove(body[i]);
+				}
 			}
-			res.send(200, {deletecount: body.length});
 			break;
 		default:
 			return next(new VersionException("you must supply a Content-Type as shown in the documentation."));
@@ -142,13 +170,37 @@ exports.insertTag = function(res, version, body, next){
 	if (!body.name) {return next(new DBException("no tag supplied!"))};
 	switch(version){
 		case "v2":
-			Tag.update({version: version}, {name: body.name}, {upsert: true}, function(err){
+			Tag.update({version: version, name: body.name}, body, {upsert: true}, function(err, n, r){
 				if(err) 
 					return next(new DBException(err));
 				else{
 					res.send(200, {name: body.name});
 				}
 			});
+			break;
+		default:
+			return next(new VersionException("you must supply a Content-Type as shown in the documentation."));
+	}
+}
+
+exports.removeTag = function(res, version, body, next){
+	if (!body || body.length === 0) {return next(new DBException("empty body!"))};
+	var remove = function(tagg){
+		Picture2.remove({tag: tagg}, function(err, count){
+			if(count){
+				Tag.remove({name: tagg}, function(err, count){
+				});
+			}else{
+				return ;
+			}
+		});
+	};
+	switch(version){
+		case "v2":
+			for(var i = 0; i < body.length; i++){
+				remove(body[i].name);
+			}
+			res.send(200);
 			break;
 		default:
 			return next(new VersionException("you must supply a Content-Type as shown in the documentation."));

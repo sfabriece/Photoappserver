@@ -5,7 +5,7 @@ var pictureSchema = new Schema({
 	version: {type: String, default: 'v2'},
 	thumburl: String,
 	url: String,
-	tag: [String],
+	tag: {type: String, default: "undefined"},
 	date: Date
 });
 
