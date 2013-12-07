@@ -14,6 +14,7 @@ function setup(app){
 	app.get('/api/picture/getpictures', PictureHandler.getPictures);
 	app.post('/api/picture/delete', PictureHandler.deletePictures);
 	app.post('/api/tag/delete', TagHandler.removeTag);
+	app.get('/api/tag/gettags', TagHandler.getTags);
 }
 
 exports.setup = setup;

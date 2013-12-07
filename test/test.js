@@ -256,13 +256,14 @@ describe ('Test', function(){
 				}	
 			})// end insert pictures before tag remove test
 
-			it('should remove 2 tag', function(done){
-				req.body = [{name: mytag}, {name: tag2}];
+			it('should remove 3 tag', function(done){
+				req.body = [{name: mytag}, {name: tag2}, {name:"uis"}];
 				var res = new Response(finish);
 				TagHandler.removeTag(req, res);
 
 				function finish(){
 					assert.equal(200, res.statusCode, res.body);
+					assert.equal(3, res.body, res.body);
 					done();
 				}
 			})// end remove tag
@@ -277,7 +278,72 @@ describe ('Test', function(){
 					done();
 				}
 			})// end check pictures after remove tag
+
 		})// end remove tag
+
+		describe('return tags', function(){
+			var req = new Request();
+			req.set('Content-Type', 'application/v2+json');
+			it('should first tag', function(done){
+				req.body = {name:"fab"};
+				var res = new Response(finish);
+				TagHandler.insertTag(req, res);
+
+				function finish(){
+					assert.equal(200, res.statusCode, res.body);
+					assert.equal("fab", res.body.name, res.body);
+					done();
+				}
+			})// end add first tags
+
+			it('should second tag', function(done){
+				req.body = {name:"stian"};
+				var res = new Response(finish);
+				TagHandler.insertTag(req, res);
+
+				function finish(){
+					assert.equal(200, res.statusCode, res.body);
+					assert.equal("stian", res.body.name, res.body);
+					done();
+				}
+			})// end add second tags
+
+			it('should second tag', function(done){
+				req.body = {name:"jojo"};
+				var res = new Response(finish);
+				TagHandler.insertTag(req, res);
+
+				function finish(){
+					assert.equal(200, res.statusCode, res.body);
+					assert.equal("jojo", res.body.name, res.body);
+					done();
+				}
+			})// end add second tags
+
+			it('should return 3 tags', function(done){
+				var res = new Response(finish);
+				TagHandler.getTags(req, res);
+
+				function finish(){
+					assert.equal(200, res.statusCode, res.body);
+					assert.equal(3, res.body.length, res.body);
+					done();
+				}
+			})
+
+			it('should remove the three tags', function(done){
+				req.body = [{name:"fab"}, {name:"stian"}, {name:"jojo"}];
+				var res = new Response(finish);
+				TagHandler.removeTag(req, res);
+				
+				function finish(){
+					assert.equal(200, res.statusCode, res.body);
+					assert.equal(3, res.body, res.body);
+					done();
+				}
+			})
+
+		})// end return tags
 		
 	})// end tag describe
 })// end Test

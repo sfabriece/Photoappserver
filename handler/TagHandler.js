@@ -18,3 +18,12 @@ exports.removeTag = function(req, res){
 		}
 	});
 }
+
+exports.getTags= function(req, res){
+	var version = util.getVersion(req);
+	factory.getTags(res, version, function(err){
+		if (err) {
+			res.send(500, err.message);
+		}
+	});
+}

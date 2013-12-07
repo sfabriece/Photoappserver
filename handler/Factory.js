@@ -185,22 +185,37 @@ exports.insertTag = function(res, version, body, next){
 
 exports.removeTag = function(res, version, body, next){
 	if (!body || body.length === 0) {return next(new DBException("empty body!"))};
-	var remove = function(tagg){
-		Picture2.remove({tag: tagg}, function(err, count){
-			if(count){
-				Tag.remove({name: tagg}, function(err, count){
-				});
-			}else{
-				return ;
-			}
-		});
-	};
+	
 	switch(version){
 		case "v2":
-			for(var i = 0; i < body.length; i++){
-				remove(body[i].name);
+			for(var i in body) {
+				Picture2.remove({tag: body[i].name}, function(e, n){});
 			}
-			res.send(200);
+
+			var count = 0;
+			var deleted  = 0;
+			for(var i in body){
+				Tag.remove({name: body[i].name}, function(err, num){
+					deleted += num;
+					if(++count == body.length){
+						res.send(200, deleted);
+						return;
+					}
+				});
+			}
+			break;
+		default:
+			return next(new VersionException("you must supply a Content-Type as shown in the documentation."));
+	}
+}
+
+exports.getTags = function(res, version, next){
+	switch(version){
+		case "v2":
+			Tag.find({}, function(err, tags){
+				//console.log(tags);
+				res.send(200, tags);
+			});
 			break;
 		default:
 			return next(new VersionException("you must supply a Content-Type as shown in the documentation."));
