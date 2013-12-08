@@ -28,3 +28,12 @@ exports.deletePictures = function (req, res){
 		}
 	});
 }
+
+exports.getPicturesByTag = function(req, res){
+	var version = util.getVersion(req);
+	factory.getPicturesByTag(res, version, req.params.value, function(err){
+		if (err) {
+			res.send(500, err.message);
+		}
+	});
+}

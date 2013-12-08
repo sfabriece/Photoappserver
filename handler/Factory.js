@@ -41,6 +41,11 @@ exports.getDelay = function(res, version, next){
 }
 
 exports.setDelay = function(res, version, value, next){
+	try{
+		parseInt(value);
+	}catch(e){
+		return next(new DBException("not an integer"));
+	}
 	switch(version){
 		case "v1":
 			Delay.update({version: version}, {time: value}, {upsert: true}, function(err){
@@ -65,15 +70,9 @@ exports.setDelay = function(res, version, value, next){
 
 
 exports.insertPictures = function(res, version, body, next){
-	/*var success = 0;
-	var insert = function(picture, last){
-		Picture.update({url: picture.url, version: version}, picture, {upsert: true}, function(err){
-			if (!err) success++;
-			if (last) {
-				res.send(200, {successcount: success})
-			};
-		});
-	};*/
+	if(body.length == 0){
+		return next(new DBException("empty body"));
+	}
 	switch(version){
 		case "v1":
 			for (var i = body.length - 1; i >= 0; i--) {
@@ -82,7 +81,6 @@ exports.insertPictures = function(res, version, body, next){
 			res.send(200, {successcount: body.length});
 			break;
 		case "v2":
-			//console.log(body);
 			for (var i = body.length - 1; i >= 0; i--) {
 				Picture2.update({url: body[i].url, version: version, tag: body[i].tag}, body[i], {upsert: true}).exec();
 			}
@@ -117,6 +115,9 @@ exports.getPictures = function (res, version, next){
 }
 
 exports.deletePictures = function (res, version, body, next){
+	if(body.length == 0){
+		return next(new DBException("empty body"));
+	}
 	var deleted = 0;
 	var last = false;
 	var callback = function(err, picture){
@@ -166,6 +167,24 @@ exports.deletePictures = function (res, version, body, next){
 	}
 }
 
+exports.getPicturesByTag = function (res, version, value, next){
+	if(!value){
+		return next(new DBException("no tag given!"));
+	}
+
+	switch(version){
+		case "v2":
+			Picture2.aggregate({$sort : { date: -1}}, {$limit : 100}, {$match :{tag: value}}).exec(function(err, pictures){
+				res.send(200, pictures);
+				return;
+			});
+			break;
+		default:
+			return next(new VersionException("you must supply a Content-Type as shown in the documentation."));
+	}
+}
+
+
 exports.insertTag = function(res, version, body, next){
 	if (!body.name) {return next(new DBException("no tag supplied!"))};
 	switch(version){
@@ -184,7 +203,9 @@ exports.insertTag = function(res, version, body, next){
 }
 
 exports.removeTag = function(res, version, body, next){
-	if (!body || body.length === 0) {return next(new DBException("empty body!"))};
+	if(body.length == 0 || !body[0].name){
+		return next(new DBException("no tag given!"));
+	}
 	
 	switch(version){
 		case "v2":
@@ -213,7 +234,6 @@ exports.getTags = function(res, version, next){
 	switch(version){
 		case "v2":
 			Tag.find({}, function(err, tags){
-				//console.log(tags);
 				res.send(200, tags);
 			});
 			break;

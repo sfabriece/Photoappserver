@@ -12,7 +12,12 @@ var Request = require('./mock').Request;
 var Response = require('./mock').Response;
 var utils = require('../Util/utils');
 
-
+function clean(){
+	Delay.remove({version: "v1", time: 4}, function(err){});
+	Picture.remove({url: {$ne: null}}, function(err){});
+	Picture2.remove({url: {$ne: null}}, function(err){});
+	Tag.remove({name: {$ne: null}}, function(err){});
+}
 describe ('Test', function(){
 
 	it('util test', function(done){
@@ -35,10 +40,6 @@ describe ('Test', function(){
 	})//end before
 
 	after(function(done){
-		Delay.remove({version: "v1", time: 4}, function(err){});
-		Picture.remove({url: {$ne: null}}, function(err){});
-		Picture2.remove({url: {$ne: null}}, function(err){});
-		Tag.remove({name: {$ne: null}}, function(err){});
 		db.close();
 		console.log("db closed.");
 		done();
@@ -71,149 +72,200 @@ describe ('Test', function(){
 		})// end get delay
 	})//end delay describe
 
-	describe ('Pictures Test', function(){
-		var req = new Request();
-		req.set('Content-Type', 'application/v1+json');
-
-		var pictures = [];
-		pictures.push({thumburl: "aaa", url: "fff"});
-		pictures.push({thumburl: "bbb", url: "zzz"});
-		it('should insert pictures', function(done){	
-			req.body = pictures;
-			var res = new Response(finish);
-			PictureHandler.insertPictures(req, res);
-
-			function finish(){
-				assert.equal(200, res.statusCode, res.body);
-				assert.equal(2, res.body.successcount, res.body);
-				done();
-			}	
-		})// end insert pictures
-
-		it('should return pictures', function(done){
+	describe('Picture Test', function(){
+		describe ('Pictures Test v1', function(){
 			var req = new Request();
 			req.set('Content-Type', 'application/v1+json');
-			var res = new Response(finish);
-			PictureHandler.getPictures(req, res);
 
-			function finish(){
-				assert.equal(200, res.statusCode, res.body);
-				assert.notEqual(0, res.body.length, res.body);
-				assert.equal("bbb", res.body[0].thumburl, res.body);
-				done();
-			}
-		})// end return pictures
+			var pictures = [];
+			pictures.push({thumburl: "aaa", url: "fff"});
+			pictures.push({thumburl: "bbb", url: "zzz"});
+			it('should insert pictures', function(done){	
+				req.body = pictures;
+				var res = new Response(finish);
+				PictureHandler.insertPictures(req, res);
 
-		it('should delete one picture', function(done){
-			var urls = [];
-			urls.push({url: "zzz"});
-				
-			req.body = urls;
-			var res = new Response(finish);
-			PictureHandler.deletePictures(req, res);
+				function finish(){
+					assert.equal(200, res.statusCode, res.body);
+					assert.equal(2, res.body.successcount, res.body);
+					done();
+				}	
+			})// end insert pictures
 
-			function finish(){
-				assert.equal(200, res.statusCode, res.body);
-				assert.equal(1, res.body.deletecount, res.body);
-				done();
-			}
-		})// end delete one picture
+			it('should return pictures', function(done){
+				var req = new Request();
+				req.set('Content-Type', 'application/v1+json');
+				var res = new Response(finish);
+				PictureHandler.getPictures(req, res);
 
-		it('should return one picture', function(done){
-			var res = new Response(finish);
-			PictureHandler.getPictures(req, res);
+				function finish(){
+					assert.equal(200, res.statusCode, res.body);
+					assert.notEqual(0, res.body.length, res.body);
+					assert.equal("bbb", res.body[0].thumburl, res.body);
+					done();
+				}
+			})// end return pictures
 
-			function finish(){
-				assert.equal(200, res.statusCode, res.body);
-				assert.equal(1, res.body.length, res.body);
-				assert.equal("aaa", res.body[0].thumburl, res.body);
-				done();
-			}
-		})// end return pictures
-	})// end pictures describe
+			it('should delete one picture', function(done){
+				var urls = [];
+				urls.push({url: "zzz"});
+					
+				req.body = urls;
+				var res = new Response(finish);
+				PictureHandler.deletePictures(req, res);
 
-	describe ('Pictures Test v2', function(){
-		var req = new Request();
-		req.set('Content-Type', 'application/v2+json');
+				function finish(){
+					assert.equal(200, res.statusCode, res.body);
+					assert.equal(1, res.body.deletecount, res.body);
+					done();
+				}
+			})// end delete one picture
 
-		var pictures = [];
-		pictures.push({thumburl: "aaa", url: "fff", date: new Date()});
-		pictures.push({thumburl: "bbb", url: "zzz", date: new Date()});
-		it('should insert pictures', function(done){	
-			req.body = pictures;
-			var res = new Response(finish);
-			PictureHandler.insertPictures(req, res);
+			it('should return one picture', function(done){
+				var res = new Response(finish);
+				PictureHandler.getPictures(req, res);
 
-			function finish(){
-				assert.equal(200, res.statusCode, res.body);
-				assert.equal(2, res.body.successcount, res.body);
-				done();
-			}	
-		})// end insert pictures
+				function finish(){
+					assert.equal(200, res.statusCode, res.body);
+					assert.equal(1, res.body.length, res.body);
+					assert.equal("aaa", res.body[0].thumburl, res.body);
+					done();
+				}
+			})// end return pictures
+		})// end pictures v1describe
 
-		it('should return pictures', function(done){
+		describe ('Pictures Test v2', function(){
 			var req = new Request();
 			req.set('Content-Type', 'application/v2+json');
-			var res = new Response(finish);
-			PictureHandler.getPictures(req, res);
 
-			function finish(){
-				assert.equal(200, res.statusCode, res.body);
-				assert.notEqual(0, res.body.length, res.body);
-				assert.equal("bbb", res.body[0].thumburl, res.body);
-				done();
-			}
-		})// end return pictures
+			var pictures = [];
+			pictures.push({thumburl: "aaa", url: "fff", date: new Date()});
+			pictures.push({thumburl: "bbb", url: "zzz", date: new Date()});
+			it('should insert pictures', function(done){	
+				req.body = pictures;
+				var res = new Response(finish);
+				PictureHandler.insertPictures(req, res);
 
-		it('should delete one picture', function(done){
-			var urls = [];
-			urls.push({url: "zzz"});
-				
-			req.body = urls;
-			var res = new Response(finish);
-			PictureHandler.deletePictures(req, res);
+				function finish(){
+					assert.equal(200, res.statusCode, res.body);
+					assert.equal(2, res.body.successcount, res.body);
+					done();
+				}	
+			})// end insert pictures
 
-			function finish(){
-				assert.equal(200, res.statusCode, res.body);
-				assert.equal(1, res.body.deletecount, res.body);
-				done();
-			}
-		})// end delete one picture
+			it('should return pictures', function(done){
+				var req = new Request();
+				req.set('Content-Type', 'application/v2+json');
+				var res = new Response(finish);
+				PictureHandler.getPictures(req, res);
 
-		it('should return one picture', function(done){
-			var res = new Response(finish);
-			PictureHandler.getPictures(req, res);
+				function finish(){
+					assert.equal(200, res.statusCode, res.body);
+					assert.notEqual(0, res.body.length, res.body);
+					assert.equal("bbb", res.body[0].thumburl, res.body);
+					done();
+				}
+			})// end return pictures
 
-			function finish(){
-				assert.equal(200, res.statusCode, res.body);
-				assert.equal(1, res.body.length, res.body);
-				assert.equal("aaa", res.body[0].thumburl, res.body);
-				Picture2.remove({url: {$ne: null}}, function(err){});
-				done();
-			}
-		})// end return pictures
-	})// end pictures v2 describe
+			it('should delete one picture', function(done){
+				var urls = [];
+				urls.push({url: "zzz"});
+					
+				req.body = urls;
+				var res = new Response(finish);
+				PictureHandler.deletePictures(req, res);
+
+				function finish(){
+					assert.equal(200, res.statusCode, res.body);
+					assert.equal(1, res.body.deletecount, res.body);
+					done();
+				}
+			})// end delete one picture
+
+			it('should return one picture', function(done){
+				var res = new Response(finish);
+				PictureHandler.getPictures(req, res);
+
+				function finish(){
+					assert.equal(200, res.statusCode, res.body);
+					assert.equal(1, res.body.length, res.body);
+					assert.equal("aaa", res.body[0].thumburl, res.body);
+					Picture2.remove({url: {$ne: null}}, function(err){});
+					done();
+				}
+			})// end return pictures
+
+			describe('return pictures by tag', function(){
+				var req = new Request();
+				req.set('Content-Type', 'application/v2+json');
+				var mytag = "custom";
+				var tag2 = "yellow";
+
+				it('should insert a tag before remove', function(done){
+					req.body = {name:mytag};
+					var res = new Response(finish);
+					TagHandler.insertTag(req, res);
+
+					function finish(){
+						assert.equal(200, res.statusCode, res.body);
+						assert.equal(mytag, res.body.name, res.body);
+						done();
+					}
+				})// end insert a tag before remove
+
+				it('should insert second tag before remove', function(done){
+					req.body = {name:tag2};
+					var res = new Response(finish);
+					TagHandler.insertTag(req, res);
+
+					function finish(){
+						assert.equal(200, res.statusCode, res.body);
+						assert.equal(tag2, res.body.name, res.body);
+						done();
+					}
+				})// end insert second tag before remove
+
+				it('should insert 4 pictures', function(done){	
+					var pictures = [];
+					pictures.push({thumburl: "aaa", url: "fff", date: new Date(), tag: mytag});
+					pictures.push({thumburl: "bbb", url: "zzz", date: new Date(), tag: mytag});
+					pictures.push({thumburl: "aaa", url: "lala", date: new Date(), tag: tag2});
+					pictures.push({thumburl: "bbb", url: "baba", date: new Date(), tag: tag2});
+					req.body = pictures;
+					var res = new Response(finish);
+					PictureHandler.insertPictures(req, res);
+
+					function finish(){
+						assert.equal(200, res.statusCode, res.body);
+						assert.equal(4, res.body.successcount, res.body);
+						done();
+					}	
+				})// end insert 4 pictures
+
+				it('should return pictures with the tag  custom', function(done){
+					req.params = {value: tag2};
+					var res = new Response(finish);
+					PictureHandler.getPicturesByTag(req, res);
+
+					function finish(){
+						assert.equal(200, res.statusCode, res.body);
+						assert.equal(2, res.body.length, res.body);
+						assert.equal(tag2, res.body[0].tag, res.body);
+						//clean the test
+						clean();
+						done();
+					}
+				})
+			})// end return pictures by tag
+		})// end pictures v2 describe
+	})//end main picture test
 
 	describe('Tag tests', function(){
-		var req = new Request();
-		req.set('Content-Type', 'application/v2+json');
-		it('should insert a tag', function(done){
-			req.body = {name:"uis"};
-			var res = new Response(finish);
-			TagHandler.insertTag(req, res);
-
-			function finish(){
-				assert.equal(200, res.statusCode, res.body);
-				assert.equal("uis", res.body.name, res.body);
-				done();
-			}
-		})// end insert tag
-
 		describe('remove tag', function(){
 			var req = new Request();
 			req.set('Content-Type', 'application/v2+json');
-			var mytag = "custom";
-			var tag2 = "yellow";
+			var mytag = "mama";
+			var tag2 = "papa";
 
 			it('should insert a tag before remove', function(done){
 				req.body = {name:mytag};
@@ -256,14 +308,14 @@ describe ('Test', function(){
 				}	
 			})// end insert pictures before tag remove test
 
-			it('should remove 3 tag', function(done){
-				req.body = [{name: mytag}, {name: tag2}, {name:"uis"}];
+			it('should remove 2 tag', function(done){
+				req.body = [{name: mytag}, {name: tag2}];
 				var res = new Response(finish);
 				TagHandler.removeTag(req, res);
 
 				function finish(){
 					assert.equal(200, res.statusCode, res.body);
-					assert.equal(3, res.body, res.body);
+					assert.equal(2, res.body, res.body);
 					done();
 				}
 			})// end remove tag
@@ -284,7 +336,7 @@ describe ('Test', function(){
 		describe('return tags', function(){
 			var req = new Request();
 			req.set('Content-Type', 'application/v2+json');
-			it('should first tag', function(done){
+			it('should insert first tag', function(done){
 				req.body = {name:"fab"};
 				var res = new Response(finish);
 				TagHandler.insertTag(req, res);
@@ -296,7 +348,7 @@ describe ('Test', function(){
 				}
 			})// end add first tags
 
-			it('should second tag', function(done){
+			it('should insert second tag', function(done){
 				req.body = {name:"stian"};
 				var res = new Response(finish);
 				TagHandler.insertTag(req, res);
@@ -344,6 +396,5 @@ describe ('Test', function(){
 			})
 
 		})// end return tags
-		
-	})// end tag describe
+	})// end tag tests
 })// end Test
