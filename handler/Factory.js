@@ -81,11 +81,20 @@ exports.insertPictures = function(res, version, body, next){
 			res.send(200, {successcount: body.length});
 			break;
 		case "v2":
+			var count = 0;
+			var success = 0;
 			for (var i = body.length - 1; i >= 0; i--) {
-				Picture2.update({url: body[i].url, version: version, tag: body[i].tag}, body[i], {upsert: true}).exec();
+				Picture2.update({url: body[i].url, version: version, tag: body[i].tag}, body[i], {upsert: true}, function(err, numberAffected, raw){
+					if(!err){
+						success++;
+						if(++count == body.length){
+							res.send(200, {successcount: success});
+							DBUtils.truncate
+							return;
+						}
+					}
+				});
 			}
-			res.send(200, {successcount: body.length});
-			setTimeout(DBUtils.truncate, 10000);
 			break;
 		default:
 			return next(new VersionException("you must supply a Content-Type as shown in the documentation."));

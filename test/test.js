@@ -24,6 +24,8 @@ describe ('Test', function(){
 		var req = new Request();
 		req.set('Content-Type', 'application/v1+json');
 		assert.equal('v1', utils.getVersion(req));
+		//clean dbs
+		clean();
 		done()
 	})// end util test
 
