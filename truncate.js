@@ -3,6 +3,7 @@ var mongoose = require('mongoose');
 var Picture = require('./Model/V2Models').Picture;
 var Tag = require('./Model/V2Models').Tag;
 var Twit = require('twit');
+var Instagram = require('instagram').createClient('34fa91a54ccf404788dbc342ebd8cbf7', 'e6cb560183854e7c887f1bfbc0a1d8fb');
 
 mongoose.connect("localhost/test");
 db = mongoose.connection;
@@ -11,7 +12,21 @@ db.once('open', function(){
 	console.log("Successfully connected to mongoDB. ");		
 })	
 
-var T = new Twit({
+Instagram.tags.media('snow', {min_timestamp:  1386806400000}, function (tag, error) {
+    for(var i in tag){
+        var dato = parseInt(tag[i].created_time) * 1000;
+        var p = {
+            version: "v2",
+            thumburl: tag[i].images.thumbnail.url,
+            url: tag[i].images.standard_resolution.url,
+            tag: 'snow',
+            date: new Date(dato)
+        };
+        console.log(p);
+    }
+});
+
+/*var T = new Twit({
     consumer_key:         'zSKUcDDSvV5FjknVRdStXQ',
 	consumer_secret:      '8PuyN7CoIreHYme4RZqjvjG7dB9YOstriIfqwchH4us',
 	access_token:         '50929382-RWUiOxEzc6Foa6lGn5Vi5IZjmTnfk2PitmviPU0Qt',
