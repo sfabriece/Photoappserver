@@ -84,7 +84,14 @@ exports.insertPictures = function(res, version, body, next){
 			var count = 0;
 			var success = 0;
 			for (var i = body.length - 1; i >= 0; i--) {
-				Picture2.update({url: body[i].url, version: version, tag: body[i].tag}, body[i], {upsert: true}, function(err, numberAffected, raw){
+				var p = {
+					version: version,
+					thumburl: body[i].thumburl,
+					url: body[i].url,
+					tag: body[i].tag,
+					date: new Date(parseInt(body[i].date))
+				};
+				Picture2.update({url: body[i].url, version: version, tag: body[i].tag}, p, {upsert: true}, function(err, numberAffected, raw){
 					if(!err){
 						success++;
 						if(++count == body.length){
