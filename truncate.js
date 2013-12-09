@@ -1,6 +1,7 @@
 var DBUtils = require('./Util/dbutils');
 var mongoose = require('mongoose');
 var Picture = require('./Model/V2Models').Picture;
+var Tag = require('./Model/V2Models').Tag;
 var Twit = require('twit');
 
 mongoose.connect("localhost/test");
@@ -17,53 +18,76 @@ var T = new Twit({
 	access_token_secret:  'gdtVtHYnAAoyI19UNak0U8leYRmGVtah9egMrrJiCIDQ0'
 })
 
-var pictures = [];
-//
-//  search twitter for all tweets containing the word 'banana' since Nov. 11, 2011
-//
-T.get('search/tweets', { q: 'obama since:2013-09-08', count: 100 }, function(err, reply) {
-  //console.log(util.inspect(reply, false, null));
-  //console.log(JSON.stringify(reply, null, 4));
-  //console.log("err: " + err);
-  //console.log("count: ", Object.keys(reply.statuses[1].entities));
-  //console.log("date: ", JSON.stringify(reply.statuses[1].entities), null, 1);
-  //console.log("entities: ", JSON.stringify(reply.search_metadata), null, 3);
-  /*for(var i in reply){
-  	console.log(JSON.stringify(reply[i], null, 1));
-  }*/
-  var urls = [];
-  for(var i in reply.statuses){
-  	//console.log("count: ", Object.keys(reply.statuses[i].entities));
-  	var date = reply.statuses[i].created_at;
-  	var url = "";
-  	if('media' in reply.statuses[i].entities){
-  		//console.log(JSON.stringify(reply.statuses[i].entities.media[0].media_url));
-		/*url = reply.statuses[i].entities.media[0].media_url;
-		var p = {
-			version: "v2",
-			thumburl: url + ":thumb",
-			url: url + ":large",
-			tag: "life",
-			date: new Date(date)
-		};
-		Picture.update({url: p.url, version: p.version, tag: p.tag}, p, {upsert: true}).exec();
-		//pictures.push(p);*/
-  	}
-  	var urls = reply.statuses[i].entities.urls;
-  	console.log(urls.length);
-  	for(var j in urls){
-  		//console.log(JSON.stringify(urls[0]));
-  		console.log(JSON.stringify(urls[j].expanded_url));
-  		url = reply.statuses[i].entities.urls[0].expanded_url;
-  		if(url.indexOf("twitpic") > -1){
-  			urls.push(url);
-  		}
-  	}
-  }
+//var pictures = [];
+var count = 0;
+var numtags = 0;
+var search = function(){
+    DBUtils.getLatest(function(d){
+        Tag.find({}, function(err, tags){
+            if(!err){
+                numtags = tags.length;
+                var date = "" + d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate();
+                console.log("date: " + date);
+                for(var i in tags){
+                    searchTag(tags[i].name, date);
+                }
+            }
+        });
+    });   
+};
 
-  //console.log("pictures" + pictures);
-  //console.log("urls: " + urls);
-})
+function searchTag(tag, date){
+    console.log("searchtag");
+    var query = tag + " since:" + date;
+    console.log("query:" + query);
+    T.get('search/tweets', { q: query, count: 100 }, function(err, reply) {
+        for(var i in reply.statuses){
+
+            var date = reply.statuses[i].created_at;
+            var url = "";
+            if('media' in reply.statuses[i].entities){
+
+                url = reply.statuses[i].entities.media[0].media_url;
+                var p = {
+                    version: "v2",
+                    thumburl: url + ":thumb",
+                    url: url + ":large",
+                    tag: tag,
+                    date: new Date(date)
+                };
+                Picture.update({url: p.url, version: p.version, tag: p.tag}, p, {upsert: true}).exec();
+                console.log("pic: " + p);
+            }
+            var urls = reply.statuses[i].entities.urls;
+
+            if(urls.length > 0){
+                var url = urls[0].expanded_url;
+                if(url.indexOf("twitpic") > -1){     
+                    var p = {
+                        version: "v2",
+                        thumburl: "http://twitpic.com/show/thumb/" + url.substring(19, url.length),
+                        url: "http://twitpic.com/show/large/" + url.substring(19, url.length),
+                        tag: tag,
+                        date: new Date(date)
+                    };       
+                    Picture.update({url: p.url, version: p.version, tag: p.tag}, p, {upsert: true}).exec();
+                    //pictures.push(p);
+                }
+            }
+        }
+
+        if(++count == numtags){
+            DBUtils.truncate();
+            return;
+        }
+    });
+}
+
+//setInterval(search, 10000);
+search();
+/*var t = DBUtils.getLatest(function(t){
+    console.log(t);
+});
 /*var pictureSchema = new Schema({
 	version: {type: String, default: 'v2'},
 	thumburl: String,
