@@ -92,7 +92,7 @@ exports.insertPictures = function(res, version, body, next){
 					date: new Date(parseInt(body[i].date) * 1000)
 				};
 				console.log("in: " + body[i].date);
-				console.log("out: " + p.date);
+				console.log("date: " + p.date);
 				Picture2.update({url: body[i].url, version: version, tag: body[i].tag}, p, {upsert: true}, function(err, numberAffected, raw){
 					if(!err){
 						success++;
