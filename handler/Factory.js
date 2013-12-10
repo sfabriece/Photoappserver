@@ -96,7 +96,7 @@ exports.insertPictures = function(res, version, body, next){
 						success++;
 						if(++count == body.length){
 							res.send(200, {successcount: success});
-							DBUtils.truncate
+							DBUtils.truncate();
 							return;
 						}
 					}
