@@ -2,6 +2,7 @@ var config = require('./Config/config');
 var winston = require('winston');
 var mongoose = require('mongoose');
 var server = require('./server');
+var Search = require('./search');
 var configuration = "";
 // log normal api operations into api.log
 console.log("Starting logger...");
@@ -33,4 +34,6 @@ db.once('open', function(){
 	server.app.set('port', process.env.Port || config.dev.test.port);
 	server.start();
 	console.log("Successfully started web server. Waiting for incoming connections...");
+	setInterval(Search.search, 60000);;
+	console.log("successfully started auto updater...");
 });

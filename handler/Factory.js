@@ -205,7 +205,11 @@ exports.insertTag = function(res, version, body, next){
 	if (!body.name) {return next(new DBException("no tag supplied!"))};
 	switch(version){
 		case "v2":
-			Tag.update({version: version, name: body.name}, body, {upsert: true}, function(err, n, r){
+			var minid = 0;
+			if(body.min_id){
+				minid = body.min_id;
+			}
+			Tag.update({version: version, name: body.name, min_id: minid}, body, {upsert: true}, function(err, n, r){
 				if(err) 
 					return next(new DBException(err));
 				else{

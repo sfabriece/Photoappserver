@@ -12,7 +12,6 @@ var Request = require('./mock').Request;
 var Response = require('./mock').Response;
 var utils = require('../Util/utils');
 
-
 describe ('Test', function(){
 
 	it('util test', function(done){
@@ -30,6 +29,10 @@ describe ('Test', function(){
 		db.on('error', console.error.bind(console, 'connection error:'));
 		db.once('open', function(){
 			console.log("Successfully connected to mongoDB. ");
+			Delay.remove({version: "v1", time: 4}, function(err){});
+			Picture.remove({url: {$ne: null}}, function(err){});
+			Picture2.remove({url: {$ne: null}}, function(err){});
+			Tag.remove({name: {$ne: null}}, function(err){});
 			done();
 		})				
 	})//end before
@@ -37,14 +40,14 @@ describe ('Test', function(){
 	after(function(done){
 		Delay.remove({version: "v1", time: 4}, function(err){});
 		Picture.remove({url: {$ne: null}}, function(err){});
-		//Picture2.remove({url: {$ne: null}}, function(err){});
-		//Tag.remove({name: {$ne: null}}, function(err){});
+		Picture2.remove({url: {$ne: null}}, function(err){});
+		Tag.remove({name: {$ne: null}}, function(err){});
 		db.close();
 		console.log("db closed.");
 		done();
 	})//end after
 	
-	/*describe ('Delay Test', function(){
+	describe ('Delay Test', function(){
 		it('should insert delay of 4', function(done){
 			var req = new Request(4);
 			req.set('Content-Type', 'application/v1+json');
@@ -145,7 +148,6 @@ describe ('Test', function(){
 			PictureHandler.insertPictures(req, res);
 
 			function finish(){
-				console.log("res: " + res.body);
 				assert.equal(200, res.statusCode, res.body);
 				assert.equal(2, res.body.successcount, res.body);
 				done();
@@ -193,13 +195,13 @@ describe ('Test', function(){
 				done();
 			}
 		})// end return pictures
-	})// end pictures v2 describe*/
+	})// end pictures v2 describe
 
 	describe('Tag tests', function(){
 		var req = new Request();
 		req.set('Content-Type', 'application/v2+json');
 
-		/*describe('remove tag', function(){
+		describe('remove tag', function(){
 			var req = new Request();
 			req.set('Content-Type', 'application/v2+json');
 			var mytag = "custom";
@@ -333,7 +335,7 @@ describe ('Test', function(){
 				}
 			})
 
-		})// end return tags*/
+		})// end return tags
 
 		describe('return pictures by tag', function(){
 			var req = new Request();

@@ -6,13 +6,13 @@ var pictureSchema = new Schema({
 	thumburl: String,
 	url: String,
 	tag: {type: String, default: "undefined"},
-	date: Date,
-	idf: {type: Number, default: 0}
+	date: Date
 });
 
 var tagSchema = new Schema({
 	version: {type: String, default: 'v2'},
-	name: String
+	name: String,
+	min_id: {type: Number, default: 0}
 });
 
 exports.Picture = mongoose.model('Picturev2', pictureSchema, 'picturev2');
