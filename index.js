@@ -34,6 +34,6 @@ db.once('open', function(){
 	server.app.set('port', process.env.Port || config.dev.test.port);
 	server.start();
 	console.log("Successfully started web server. Waiting for incoming connections...");
-	setInterval(Search.search, 60000);;
+	setInterval(Search.search, 30000);;
 	console.log("successfully started auto updater...");
 });
