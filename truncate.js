@@ -14,6 +14,7 @@ db.once('open', function(){
 
 Instagram.tags.media('snow', {min_timestamp:  1386806400000}, function (tag, error) {
     for(var i in tag){
+        console.log("id: " + typeof tag[i].id);
         var dato = parseInt(tag[i].created_time) * 1000;
         var p = {
             version: "v2",
