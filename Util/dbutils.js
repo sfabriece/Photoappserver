@@ -7,9 +7,6 @@ exports.truncate = function(){
 			//console.log("count:" + count);
 			if(count >= 100){
 				var limit = res[count - 1];
-				for (var i in res){
-					console.log(res[i].date);
-				}
 				//console.log("id:" + limit.date);
 				Picture.remove({date:{$lt : limit.date}}, function(err, deleted){
 					if (!err) {
