@@ -6,7 +6,8 @@ var pictureSchema = new Schema({
 	thumburl: String,
 	url: String,
 	tag: {type: String, default: "undefined"},
-	date: Date
+	date: Date,
+	idf: {type: Number, default: 0}
 });
 
 var tagSchema = new Schema({

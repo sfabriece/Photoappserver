@@ -28,7 +28,31 @@ exports.truncate = function(){
 exports.getLatest = function(next){
 	Picture.aggregate({$sort : { date: -1}}, {$limit : 1}).exec(function(err, res){
 		if(!err){
-			return next(res[0].date);
+			if(res.length > 0){
+				return next(res[0].date);
+			}else{
+				return next(new Date(2013, 9, 1));
+			}
+		}else{
+			return next(new Date());
+		}
+	});
+};
+
+exports.getLatestInst = function(next){
+	Picture.aggregate({$sort : { idf: -1}}, {$limit : 1}).exec(function(err, res){
+		if(!err){
+			if(res.length > 0){
+				if(res[0].idf){
+					return next(res[0].idf);
+				}else{
+					return next(0);
+				}
+			}else{
+				return next(0);
+			}
+		}else{
+			return next(0);
 		}
 	});
 };
