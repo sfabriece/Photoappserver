@@ -10,7 +10,7 @@ exports.truncate = function(){
 				//console.log("id:" + limit.date);
 				Picture.remove({date:{$lt : limit.date}}, function(err, deleted){
 					if (!err) {
-						console.log("deleted: " + deleted);
+						//console.log("deleted: " + deleted);
 						return deleted;
 					}
 					return 0;
