@@ -8,7 +8,8 @@
 		"mongoose": "3.8.0",
 		"winston": "0.7.2",
 		"twit": "1.1.11",
-		"instagram": "0.0.4"
+		"instagram": "0.0.4",
+		"epipebomb": "0.1.1"
 	},
 	"scripts":{
 		"test": "./node_modules/.bin/mocha -R tap > report/report.tap"

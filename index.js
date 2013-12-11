@@ -3,6 +3,7 @@ var winston = require('winston');
 var mongoose = require('mongoose');
 var server = require('./server');
 var Search = require('./search');
+require('epipebomb')();
 var configuration = "";
 // log normal api operations into api.log
 console.log("Starting logger...");
