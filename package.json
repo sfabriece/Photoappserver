@@ -1,17 +1,19 @@
 {
-	"name": "Photoapp",
-	"descrption": "Dat210 project",
-	"version": "2.0.0",
-	"private": true,
-	"dependencies":{
-		"express": "3.4.4",
-		"mongoose": "3.8.0",
-		"winston": "0.7.2",
-		"twit": "1.1.11",
-		"instagram": "0.0.4",
-		"epipebomb": "0.1.1"
-	},
-	"scripts":{
-		"test": "./node_modules/.bin/mocha -R tap > report/report.tap"
-	}
+  "name": "PhotoServer",
+  "version": "0.0.1",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "lint": "./node_modules/.bin/jshint . ",
+    "checkStyle": "./node_modules/.bin/jscs .",
+    "pretest": "npm run-script lint && npm run-script checkStyle",
+    "test": "lab -c -C",
+    "posttest": "./node_modules/.bin/istanbul check-coverage && rm -rf coverage"
+  },
+  "dependencies": {
+    "boom": "^2.6.1",
+    "hapi": "^8.2.0",
+    "joi": "^6.0.4",
+    "mysql": "^2.5.5"
+  }
 }

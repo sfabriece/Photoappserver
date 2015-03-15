@@ -1,0 +1,21 @@
+{
+	"name": "photo-api",
+	"description": "PhotoServer API",
+	"version": "0.0.1",
+	"private": true,
+	"author": "Fabriece Sumuni <sfabriece@outlook.com> (http://fabricesumuni.com)",
+	"main": "index",
+	"engines": {
+		"node": ">=0.10.35"
+	},
+	"dependencies": {
+		"hoek": "2.x.x",
+		"boom": "2.x.x",
+		"joi": "5.x.x"
+	},
+	"peerDependencies": {
+		"hapi": "8.x.x"
+	},
+	"devDependencies": {},
+	"scripts": {}
+}
