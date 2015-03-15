@@ -41,7 +41,6 @@ internals.Db.prototype.getByAttr = function(table, attr, val, callback) {
 	}
 
 	var sql = 'select * from ' + table + ' where ' + attr + ' = ' + this.pool.escape(val);
-	//console.log(sql);
 	this.pool.query(sql, function(err, rows) {
 		if (err) {
 			return callback(err)
@@ -57,12 +56,12 @@ internals.Db.prototype.getByAttr = function(table, attr, val, callback) {
 
 // insert many items into a table
 internals.Db.prototype.insertMany = function(table, items, callback) {
-	console.log("db" + JSON.stringify(items));
+	//console.log("db" + JSON.stringify(items));
 	var sql = "";
 	for (var i = items.length - 1; i >= 0; i--) {
 		var item = items[i];
 		var keys = Object.keys(item);
-		sql += "insert into " + table + " (";
+		sql += "insert ignore into " + table + " (";
 		for (var j = keys.length - 1; j >= 0; j--) {
 			if (j === 0) {
 				sql += keys[j];
@@ -83,16 +82,19 @@ internals.Db.prototype.insertMany = function(table, items, callback) {
 		sql += ");"
 	}
 
-	console.log(sql);
-	this.pool.query(sql, function(err, res) {
-		console.log("return from db");
+	//console.log(sql);
+	this.pool.query(sql, function(err, rows) {
+		console.log("return from db: table : " + table);
+		//console.log("db err: " + err);
+		//console.log("db rows: " + JSON.stringify(rows));
 		if (err) {
 			console.log("db err: " + err);
+			//console.log("db rows: " + JSON.stringify(rows));
 			return callback(err);
 		};
 
 		console.log("db success");
-		return callback(null, res);
+		return callback(null, rows);
 	});
 };
 

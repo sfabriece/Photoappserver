@@ -60,7 +60,7 @@ exports.load = function(db, callback) {
 };
 
 // Saves a Tag into the database
-exports.saveMany = function(db, tags, callback) {//Tags is array of tag objects
+exports.saveMany = function(db, tags, callback) { //Tags is array of tag objects
 	console.log("tag");
 	db.insertMany('tag', tags, function(err) {
 		console.log("return from db save");
@@ -90,6 +90,7 @@ exports.removeMany = function(db, tags, callback) {
 	}
 
 	sql += ";";
+	console.log(sql);
 	db.sql(sql, function(err) {
 		if (err) {
 			console.log("err" + err);

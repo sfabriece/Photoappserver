@@ -37,7 +37,7 @@ exports.post = {
 		payload: Joi.array().items(Joi.object().keys({
 			url: Joi.string().required(),
 			thumbUrl: Joi.string().required(),
-			date: Joi.date().required(),
+			date: Joi.number().required(),
 			tag: Joi.string().required()
 		}))
 	},
@@ -97,49 +97,31 @@ exports.loadBytag = function(db, tag, callback) {
 // save Pictures from database
 //TODO load one and one using async
 exports.saveMany = function(db, pictures, callback) {
-	var next = function(){
-		db.insertMany('picture', pictures, function(err) {
-			if (err) {
-				return callback(err);
-			}
+	for (var i = pictures.length - 1; i >= 0; i--) {
+		var time = pictures[i].date * 1000;
+		pictures[i].date = new Date(time);
+	}
 
-			return callback();
-		});
-	};
-	console.log("before tag save");
-	//insert a tag that might not be in the database
-	Tag.saveMany(db, [{name: pictures[0].tag}], function(err){
-		console.log("return error: ");
+	db.insertMany('picture', pictures, function(err) {
 		if (err) {
-			console.log("err" + JSON.stringify(err));
-			if (err.errno === 1062) {
-				return next();
-			}else{
-				return callback(err);
-			}
+			return callback(err);
 		}
 
-		return next();
+		return callback();
 	});
 };
 
 //remove many pictures
 exports.removeMany = function(db, pics, callback) {
-	var sql = "delete from picture where ";
-
+	var sql = "";
 	for (var i = pics.length - 1; i >= 0; i--) {
-		if (i === 0) {
-			sql += "url=" + mysql.escape(pics[i].url) + "";
-			break;
-		}
-
-		sql += "url= " + mysql.escape(pics[i].url) + ", "
+		sql += "delete from picture where ";
+		sql += "url= " + mysql.escape(pics[i].url) + "; "
 	}
 
-	sql += ";";
 	db.sql(sql, function(err) {
 		if (err) {
-			console.log("err" + err);
+			//console.log("err" + err);
 			return callback(err);
 		}
 		return callback();

@@ -37,7 +37,7 @@ var manifest = {
 };
 var server = new Hapi.Server({
 	debug: {
-		request: [/*'error', 'received'*/]
+		request: [ /*'error', 'received'*/ ]
 	}
 });
 
