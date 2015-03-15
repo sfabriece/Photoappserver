@@ -57,6 +57,7 @@ internals.Db.prototype.getByAttr = function(table, attr, val, callback) {
 
 // insert many items into a table
 internals.Db.prototype.insertMany = function(table, items, callback) {
+	console.log("db" + JSON.stringify(items));
 	var sql = "";
 	for (var i = items.length - 1; i >= 0; i--) {
 		var item = items[i];
@@ -82,11 +83,15 @@ internals.Db.prototype.insertMany = function(table, items, callback) {
 		sql += ");"
 	}
 
+	console.log(sql);
 	this.pool.query(sql, function(err, res) {
+		console.log("return from db");
 		if (err) {
+			console.log("db err: " + err);
 			return callback(err);
 		};
 
+		console.log("db success");
 		return callback(null, res);
 	});
 };

@@ -16,7 +16,8 @@ exports.get = {
 exports.post = {
 	validate: {
 		payload: Joi.array().items(Joi.object().keys({
-			"name": Joi.string().required()
+			"name": Joi.string().required(),
+			"min_id": Joi.number().required()
 		}))
 	},
 	handler: function(request, reply) {
@@ -59,12 +60,18 @@ exports.load = function(db, callback) {
 };
 
 // Saves a Tag into the database
-exports.saveMany = function(db, tags, callback) {
+exports.saveMany = function(db, tags, callback) {//Tags is array of tag objects
+	console.log("tag");
 	db.insertMany('tag', tags, function(err) {
+		console.log("return from db save");
 		if (err) {
-			console.log("err" + err);
+			console.log("tag: save err: " + err);
+			if (err.errno === 1062) {
+				return callback();
+			}
 			return callback(err);
 		}
+		console.log("tag: save success");
 		return callback();
 	});
 };

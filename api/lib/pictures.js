@@ -1,6 +1,7 @@
 var Boom = require('boom');
 var Joi = require('joi');
 var mysql = require('mysql');
+var Tag = require('./tags');
 
 exports.get = {
 	handler: function(request, reply) {
@@ -96,12 +97,29 @@ exports.loadBytag = function(db, tag, callback) {
 // save Pictures from database
 //TODO load one and one using async
 exports.saveMany = function(db, pictures, callback) {
-	db.insertMany('picture', pictures, function(err) {
+	var next = function(){
+		db.insertMany('picture', pictures, function(err) {
+			if (err) {
+				return callback(err);
+			}
+
+			return callback();
+		});
+	};
+	console.log("before tag save");
+	//insert a tag that might not be in the database
+	Tag.saveMany(db, [{name: pictures[0].tag}], function(err){
+		console.log("return error: ");
 		if (err) {
-			return callback(err);
+			console.log("err" + JSON.stringify(err));
+			if (err.errno === 1062) {
+				return next();
+			}else{
+				return callback(err);
+			}
 		}
 
-		return callback();
+		return next();
 	});
 };
 

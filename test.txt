@@ -1,0 +1,62 @@
+
+Running node-supervisor with
+  program 'index.js'
+  --watch '.'
+  --extensions 'node,js'
+  --exec 'node'
+
+Starting child process with 'node index.js'
+Watching directory 'k:\MyProjects\web\Photoappserver' for changes.
+Hapi server started @ http://localhost:8080
+errError: ER_DUP_ENTRY: Duplicate entry 'test' for key 'PRIMARY'
+crashing child
+Starting child process with 'node index.js'
+Hapi server started @ http://localhost:8080
+crashing child
+Starting child process with 'node index.js'
+Hapi server started @ http://localhost:8080
+err{"code":"ER_DUP_ENTRY","errno":1062,"sqlState":"23000","index":0}
+crashing child
+Starting child process with 'node index.js'
+Hapi server started @ http://localhost:8080
+crashing child
+Starting child process with 'node index.js'
+Hapi server started @ http://localhost:8080
+crashing child
+Starting child process with 'node index.js'
+Hapi server started @ http://localhost:8080
+crashing child
+Starting child process with 'node index.js'
+Hapi server started @ http://localhost:8080
+crashing child
+Starting child process with 'node index.js'
+Hapi server started @ http://localhost:8080
+crashing child
+Starting child process with 'node index.js'
+Hapi server started @ http://localhost:8080
+crashing child
+Starting child process with 'node index.js'
+Hapi server started @ http://localhost:8080
+crashing child
+Starting child process with 'node index.js'
+Hapi server started @ http://localhost:8080
+crashing child
+Starting child process with 'node index.js'
+Hapi server started @ http://localhost:8080
+crashing child
+Starting child process with 'node index.js'
+Hapi server started @ http://localhost:8080
+crashing child
+Starting child process with 'node index.js'
+Hapi server started @ http://localhost:8080
+crashing child
+Starting child process with 'node index.js'
+Hapi server started @ http://localhost:8080
+crashing child
+Starting child process with 'node index.js'
+Hapi server started @ http://localhost:8080
+crashing child
+Starting child process with 'node index.js'
+Hapi server started @ http://localhost:8080
+err{"code":"ER_DUP_ENTRY","errno":1062,"sqlState":"23000","index":0}
+Sending SIGINT to child...
