@@ -1,11 +1,17 @@
 var Db = require('./db');
 //var Hoek = require('hoek');
 var Routes = require('./routes');
+var Instagram = require('./updateInstagram');
 
 var internals = {};
 
 exports.register = function(server, options, next) {
 	var database = new Db(server.app.config.database);
+	var opt = {
+		db: database
+	};
+	//console.log("db: " + JSON.stringify(database));
+	var Insta = new Instagram(opt);
 	server.bind({
 		config: server.app.config,
 		vault: server.app.vault,
@@ -40,7 +46,14 @@ exports.register = function(server, options, next) {
 			process.exit(1);
 		}
 		//initialize models
-		return next();
+		Insta.start(function(err) {
+			console.log("insta started!");
+			Insta.search(function(err, res) {
+				return next();
+			});
+
+		});
+
 	});
 };
 exports.register.attributes = {

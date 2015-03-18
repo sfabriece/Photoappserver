@@ -3,6 +3,7 @@ var mysql = require('mysql');
 var Boom = require('boom');
 // Declare internals
 var internals = {};
+
 module.exports = internals.Db = function(options) {
 	this._options = options;
 	this.pool = mysql.createPool(options);
