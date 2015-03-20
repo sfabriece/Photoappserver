@@ -138,7 +138,7 @@ internals.Db.prototype.sql = function(sql, callback) {
 	this.pool.query(sql, function(err, rows) {
 
 		if (err) {
-			return callback(internals.error(err, 'no table', 'running custome sql'));
+			return callback(internals.error(err, 'no table', 'running custome sql' + sql));
 		};
 
 		return callback(null, rows);

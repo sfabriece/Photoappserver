@@ -8,7 +8,8 @@ var internals = {};
 exports.register = function(server, options, next) {
 	var database = new Db(server.app.config.database);
 	var opt = {
-		db: database
+		db: database,
+		vault: server.app.vault
 	};
 	//console.log("db: " + JSON.stringify(database));
 	var Insta = new Instagram(opt);
@@ -48,14 +49,11 @@ exports.register = function(server, options, next) {
 		//initialize models
 		Insta.start(function(err) {
 			console.log("insta started!");
-			Insta.search(function(err, res) {
-				return next();
-			});
-
+			return next();
 		});
-
 	});
 };
+
 exports.register.attributes = {
 	pkg: require('../package.json')
 }
