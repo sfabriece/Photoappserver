@@ -86,7 +86,7 @@ exports.removeMany = function(db, tags, callback) {
 			break;
 		}
 
-		sql += "name= " + mysql.escape(tags[i].name) + ", "
+		sql += "name= " + mysql.escape(tags[i].name) + ", ";
 	}
 
 	sql += ";";

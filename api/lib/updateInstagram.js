@@ -21,7 +21,7 @@ internals.Insta.prototype.start = function(callback) {
 	new CronJob("*/30 * * * * * ", function() {
 		self.search();
 	}, null, true, "Europe/Oslo");
-	return callback()
+	return callback();
 };
 
 internals.Insta.prototype.search = function() {
@@ -40,7 +40,7 @@ internals.Insta.prototype.search = function() {
 	], function(err, result) {
 		if (err) {
 			console.log("Insta search error: " + err);
-		};
+		}
 		//console.log("err: " + err);
 		//console.log("result: " + result);
 		//return callback(err, result);
@@ -55,7 +55,7 @@ internals.Insta.prototype.savePicsToDb = function(pic, callback) {
 			if (err) {
 				console.log("error updating tag: " + err);
 				return utCallback(err);
-			};
+			}
 			return utCallback();
 		});
 	}, function savePictures(snpCallback) {
@@ -63,7 +63,7 @@ internals.Insta.prototype.savePicsToDb = function(pic, callback) {
 			if (err) {
 				console.log("error saving pics: " + err);
 				return snpCallback(err);
-			};
+			}
 			return snpCallback();
 		});
 	}], function(err, result) {
@@ -78,7 +78,7 @@ internals.Insta.prototype.getNewPicInsta = function(tag, callback) {
 		function(err, medias, pagination, remaining, limit) {
 			if (err) {
 				return callback(err);
-			};
+			}
 			//console.log("pagi: " + JSON.stringify(pagination));
 			console.log("remaining: " + remaining);
 			//console.log("limit: " + limit);
@@ -98,7 +98,7 @@ internals.Insta.prototype.getNewPicInsta = function(tag, callback) {
 					thumbUrl: pic.images.thumbnail.url,
 					tag: tag.name
 				});
-			};
+			}
 			return callback(null, results);
 		});
 };

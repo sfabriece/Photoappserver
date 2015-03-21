@@ -1,7 +1,7 @@
 //Load modules
 var Pictures = require('./pictures');
-var Delay = require('./delay')
-var Tags = require('./tags')
+var Delay = require('./delay');
+var Tags = require('./tags');
 
 // API Server Endpoints
 exports.endpoints = [

@@ -116,7 +116,7 @@ exports.removeMany = function(db, pics, callback) {
 	var sql = "";
 	for (var i = pics.length - 1; i >= 0; i--) {
 		sql += "delete from picture where ";
-		sql += "url= " + mysql.escape(pics[i].url) + "; "
+		sql += "url= " + mysql.escape(pics[i].url) + "; ";
 	}
 
 	db.sql(sql, function(err) {

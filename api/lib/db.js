@@ -13,11 +13,12 @@ internals.Db.prototype.initialize = function(callback) {
 	this.pool.getConnection(function(err, connection) {
 		connection.release();
 		if (err) {
-			pool.end();
+			this.pool.end();
+			return callback(err);
 		}
-		callback(err);
+		return callback();
 	});
-}
+};
 
 //get the whole table
 internals.Db.prototype.all = function(table, callback) {
@@ -33,7 +34,7 @@ internals.Db.prototype.all = function(table, callback) {
 
 		return callback(null, rows);
 	});
-}
+};
 
 //get all by an attribute
 internals.Db.prototype.getByAttr = function(table, attr, val, callback) {
@@ -44,7 +45,7 @@ internals.Db.prototype.getByAttr = function(table, attr, val, callback) {
 	var sql = 'select * from ' + table + ' where ' + attr + ' = ' + this.pool.escape(val);
 	this.pool.query(sql, function(err, rows) {
 		if (err) {
-			return callback(err)
+			return callback(err);
 		}
 
 		if (!rows) {
@@ -53,7 +54,7 @@ internals.Db.prototype.getByAttr = function(table, attr, val, callback) {
 
 		return callback(null, rows);
 	});
-}
+};
 
 // insert many items into a table
 internals.Db.prototype.insertMany = function(table, items, callback) {
@@ -73,14 +74,13 @@ internals.Db.prototype.insertMany = function(table, items, callback) {
 
 		sql += ") values (";
 		for (var k = keys.length - 1; k >= 0; k--) {
-			if (k == 0) {
+			if (k === 0) {
 				sql += mysql.escape(item[keys[k]]);
 				break;
-			};
-			9
+			}
 			sql += mysql.escape(item[keys[k]]) + ", ";
-		};
-		sql += ");"
+		}
+		sql += ");";
 	}
 
 	//console.log(sql);
@@ -92,7 +92,7 @@ internals.Db.prototype.insertMany = function(table, items, callback) {
 			console.log("db err: " + err);
 			//console.log("db rows: " + JSON.stringify(rows));
 			return callback(err);
-		};
+		}
 
 		console.log("db success");
 		return callback(null, rows);
@@ -114,20 +114,19 @@ internals.Db.prototype.insertOne = function(table, item, callback) {
 
 	sql += ") values (";
 	for (var k = keys.length - 1; k >= 0; k--) {
-		if (k == 0) {
+		if (k === 0) {
 			sql += mysql.escape(item[keys[k]]);
 			break;
-		};
-		9
+		}
 		sql += mysql.escape(item[keys[k]]) + ", ";
-	};
-	sql += ");"
+	}
+	sql += ");";
 	console.log(sql);
 
 	this.pool.query(sql, function(err, rows) {
 		if (err) {
 			return callback(internals.error(err, table, 'inserting one item'));
-		};
+		}
 
 		return callback();
 	});
@@ -139,7 +138,7 @@ internals.Db.prototype.sql = function(sql, callback) {
 
 		if (err) {
 			return callback(internals.error(err, 'no table', 'running custome sql' + sql));
-		};
+		}
 
 		return callback(null, rows);
 	});
