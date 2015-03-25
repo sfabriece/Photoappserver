@@ -5,22 +5,6 @@ var Hapi = require('hapi');
 var Config = require('./config');
 var Vault = require('./vault');
 
-/*var Joi = require('joi');
-
-var schema = Joi.array().items(Joi.object().keys({
-	name: Joi.string().required(),
-	version: Joi.number().required().min(1)
-}));
-
-Joi.validate([{
-		name: "test",
-		version: 1
-		}], schema,
-	function(err, value) {
-		console.log("error: " + err);
-		console.log("value: " + JSON.stringify(value));
-	}); // err === null -> valid*/
-
 // Declare internals
 var internals = {};
 Config.server.api.uri = (Config.server.api.tls ? 'https://' : 'http://') +
@@ -37,11 +21,19 @@ var manifest = {
 };
 var server = new Hapi.Server({
 	debug: {
-		request: [ /*'error', 'received'*/ ]
+		request: ['error' /*, 'received'*/ ]
 	}
 });
 
 //add global state to Server
+if (process.argv[2]) {
+	console.log("The db host is: " + process.argv[2]);
+	Config.database.host = process.argv[2];
+}
+
+if (process.argv[3]) {
+	Config.database.password = process.argv[3]
+}
 server.app.config = Config;
 server.app.vault = Vault;
 

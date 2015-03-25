@@ -5,15 +5,15 @@ module.exports = {
 	server: {
 		api: {
 			host: 'localhost' /*'172.31.33.205'*/ ,
-			port: 8080
+			port: 12545
 		}
 	},
 	database: {
 		connectionLimit: 100,
 		host: 'localhost',
-		database: 'photo_db',
-		user: 'root',
-		password: 'developer',
+		database: 'dbfabriece',
+		user: 'fabriece',
+		password: 'ir8xvswm',
 		multipleStatements: true
 	}
 };
