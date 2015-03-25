@@ -11,11 +11,13 @@ module.exports = internals.Db = function(options) {
 
 internals.Db.prototype.initialize = function(callback) {
 	this.pool.getConnection(function(err, connection) {
-		connection.release();
+
 		if (err) {
+			console.log("error connecting to db: " + err);
 			this.pool.end();
 			return callback(err);
 		}
+		connection.release();
 		return callback();
 	});
 };

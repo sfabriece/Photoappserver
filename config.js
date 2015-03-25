@@ -13,7 +13,8 @@ module.exports = {
 		host: 'localhost',
 		database: 'dbfabriece',
 		user: 'fabriece',
-		password: 'ir8xvswm',
-		multipleStatements: true
+		password: 'you-wish',
+		multipleStatements: true,
+		insecureAuth: true
 	}
 };

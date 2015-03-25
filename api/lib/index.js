@@ -6,6 +6,7 @@ var Instagram = require('./updateInstagram');
 var internals = {};
 
 exports.register = function(server, options, next) {
+	console.log("got config: " + JSON.stringify(server.app.config));
 	var database = new Db(server.app.config.database);
 	var opt = {
 		db: database,
